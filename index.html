@@ -182,23 +182,38 @@
             display: flex;
             flex-direction: column;
             gap: 8px;
+            min-height: 100px;
+            padding: 8px;
+            border: 2px dashed #e0e0e0;
+            border-radius: 6px;
+            background: #fafafa;
         }
         
         .task-card {
             border: 1px solid;
             border-radius: 8px;
             padding: 12px;
-            cursor: pointer;
+            cursor: move;
             transition: all 0.2s;
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
             gap: 12px;
+            background: white;
         }
         
         .task-card:hover {
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             transform: translateY(-1px);
+        }
+        
+        .task-card.dragging {
+            opacity: 0.5;
+        }
+        
+        .task-card.drag-over {
+            border: 2px solid #4F70CD;
+            background: #f0f2ff;
         }
         
         .task-content {
@@ -210,6 +225,7 @@
             font-weight: 500;
             margin-bottom: 4px;
             color: #333;
+            user-select: none;
         }
         
         .task-criteria {
@@ -217,11 +233,13 @@
             color: #666;
             margin-bottom: 8px;
             line-height: 1.4;
+            user-select: none;
         }
         
         .task-tags {
             display: flex;
             gap: 6px;
+            margin-bottom: 8px;
         }
         
         .task-tag {
@@ -243,6 +261,7 @@
             white-space: nowrap;
             text-align: right;
             min-width: 90px;
+            cursor: pointer;
         }
         
         .owner-wendy {
@@ -279,6 +298,83 @@
         .task-card.owner-both .task-status {
             border-color: #B87517;
             color: #B87517;
+        }
+        
+        .subtasks-container {
+            margin-top: 8px;
+            padding-left: 16px;
+            border-left: 2px solid #e0e0e0;
+        }
+        
+        .subtask-item {
+            font-size: 12px;
+            padding: 6px 8px;
+            background: #f9f9f9;
+            border-radius: 4px;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .subtask-checkbox {
+            cursor: pointer;
+            width: 14px;
+            height: 14px;
+        }
+        
+        .subtask-text {
+            flex: 1;
+        }
+        
+        .subtask-text.completed {
+            text-decoration: line-through;
+            color: #999;
+        }
+        
+        .subtask-delete {
+            font-size: 12px;
+            color: #999;
+            cursor: pointer;
+            padding: 2px 4px;
+        }
+        
+        .subtask-delete:hover {
+            color: #d32f2f;
+        }
+        
+        .add-subtask-form {
+            display: flex;
+            gap: 6px;
+            margin-top: 8px;
+        }
+        
+        .add-subtask-form input {
+            flex: 1;
+            padding: 4px 8px;
+            font-size: 12px;
+        }
+        
+        .add-subtask-form button {
+            padding: 4px 12px;
+            font-size: 12px;
+        }
+        
+        .task-actions {
+            display: flex;
+            gap: 4px;
+            margin-top: 6px;
+        }
+        
+        .task-actions button {
+            padding: 4px 8px;
+            font-size: 11px;
+            background: #e0e0e0;
+            color: #333;
+        }
+        
+        .task-actions button:hover {
+            background: #d0d0d0;
         }
         
         .empty-state {
@@ -330,11 +426,9 @@
                 </select>
                 <select id="newTaskWeek">
                     <option value="1">Week 1</option>
-                    <option value="2">Week 2</option>
-                    <option value="3">Week 3</option>
-                    <option value="4">Week 4</option>
-                    <option value="5">Week 5</option>
-                    <option value="6">Week 6</option>
+                    <option value="2">Week 2-3</option>
+                    <option value="3">Week 3-4</option>
+                    <option value="5">Week 5-6</option>
                     <option value="7">Week 7+</option>
                 </select>
                 <button id="addTaskBtn">Add</button>
@@ -365,52 +459,52 @@
         
         <div class="week-section">
             <div class="week-title">Week 1 — Contracts & resources</div>
-            <div id="week1" class="tasks-list"></div>
+            <div id="week1" class="tasks-list" draggable="false"></div>
         </div>
         
         <div class="week-section">
             <div class="week-title">Week 2–3 — Customer Zero ID</div>
-            <div id="week2" class="tasks-list"></div>
+            <div id="week2" class="tasks-list" draggable="false"></div>
         </div>
         
         <div class="week-section">
             <div class="week-title">Week 3–4 — Sales enablement & training</div>
-            <div id="week3" class="tasks-list"></div>
+            <div id="week3" class="tasks-list" draggable="false"></div>
         </div>
         
         <div class="week-section">
             <div class="week-title">Week 5–6 — Customer Zero pilot</div>
-            <div id="week5" class="tasks-list"></div>
+            <div id="week5" class="tasks-list" draggable="false"></div>
         </div>
         
         <div class="week-section">
             <div class="week-title">Week 7+ — Ongoing</div>
-            <div id="week7" class="tasks-list"></div>
+            <div id="week7" class="tasks-list" draggable="false"></div>
         </div>
     </div>
 
     <script>
         let tasks = [
-            { id: "1", title: "Close enterprise license deal", owner: "wendy", week: 1, successCriteria: "Internal deployment & certification path" },
-            { id: "2", title: "Apply for Partner Growth Funds", owner: "wendy", week: 1, successCriteria: "Application submitted" },
-            { id: "3", title: "Set up weekly team sync cadence", owner: "wendy", week: 1, successCriteria: "Weekly syncs running" },
-            { id: "4", title: "Review top 10 accounts vs criteria", owner: "wendy", week: 2, successCriteria: "Top 3 candidates identified" },
-            { id: "5", title: "Select Customer Zero candidate", owner: "both", week: 2, successCriteria: "Champion selected & informed" },
-            { id: "6", title: "Secure account leader buy-in", owner: "wendy", week: 2, successCriteria: "Introduction scheduled" },
-            { id: "7", title: "Schedule Customer Zero discovery", owner: "wendy", week: 2, successCriteria: "Discovery call on calendar" },
-            { id: "8", title: "Develop sales enablement session", owner: "wendy", week: 3, successCriteria: "2-hour session + materials ready" },
-            { id: "9", title: "Schedule & deliver sales training", owner: "wendy", week: 3, successCriteria: "90%+ attendance" },
-            { id: "10", title: "Distribute sales materials", owner: "wendy", week: 3, successCriteria: "Materials in CRM & shared channel" },
-            { id: "11", title: "Launch pipeline tracker", owner: "both", week: 3, successCriteria: "System operational & linked to Salesforce" },
-            { id: "12", title: "Schedule onsite Anthropic training", owner: "both", week: 4, successCriteria: "Date & location confirmed" },
-            { id: "13", title: "Coordinate training logistics", owner: "premjeet", week: 4, successCriteria: "Invitations sent, RSVPs tracked" },
-            { id: "14", title: "Prepare co-branded materials", owner: "both", week: 4, successCriteria: "Materials approved by Anthropic" },
-            { id: "15", title: "Deliver onsite training event", owner: "both", week: 4, successCriteria: "Event complete, feedback collected" },
-            { id: "16", title: "Finalize pilot scope & metrics", owner: "wendy", week: 5, successCriteria: "SOW signed, KPIs defined" },
-            { id: "17", title: "Staff delivery team", owner: "premjeet", week: 5, successCriteria: "Team assigned & prepared" },
-            { id: "18", title: "Enroll certification candidates", owner: "premjeet", week: 5, successCriteria: "5-8 people enrolled & started" },
-            { id: "19", title: "Track internal Claude adoption", owner: "premjeet", week: 7, successCriteria: "100% license utilization" },
-            { id: "20", title: "Steering committee meetings", owner: "wendy", week: 7, successCriteria: "3 meetings completed in 90 days" }
+            { id: "1", title: "Close enterprise license deal", owner: "wendy", week: 1, successCriteria: "Internal deployment & certification path", subtasks: [] },
+            { id: "2", title: "Apply for Partner Growth Funds", owner: "wendy", week: 1, successCriteria: "Application submitted", subtasks: [] },
+            { id: "3", title: "Set up weekly team sync cadence", owner: "wendy", week: 1, successCriteria: "Weekly syncs running", subtasks: [] },
+            { id: "4", title: "Review top 10 accounts vs criteria", owner: "wendy", week: 2, successCriteria: "Top 3 candidates identified", subtasks: [] },
+            { id: "5", title: "Select Customer Zero candidate", owner: "both", week: 2, successCriteria: "Champion selected & informed", subtasks: [] },
+            { id: "6", title: "Secure account leader buy-in", owner: "wendy", week: 2, successCriteria: "Introduction scheduled", subtasks: [] },
+            { id: "7", title: "Schedule Customer Zero discovery", owner: "wendy", week: 2, successCriteria: "Discovery call on calendar", subtasks: [] },
+            { id: "8", title: "Develop sales enablement session", owner: "wendy", week: 3, successCriteria: "2-hour session + materials ready", subtasks: [] },
+            { id: "9", title: "Schedule & deliver sales training", owner: "wendy", week: 3, successCriteria: "90%+ attendance", subtasks: [] },
+            { id: "10", title: "Distribute sales materials", owner: "wendy", week: 3, successCriteria: "Materials in CRM & shared channel", subtasks: [] },
+            { id: "11", title: "Launch pipeline tracker", owner: "both", week: 3, successCriteria: "System operational & linked to Salesforce", subtasks: [] },
+            { id: "12", title: "Schedule onsite Anthropic training", owner: "both", week: 3, successCriteria: "Date & location confirmed", subtasks: [] },
+            { id: "13", title: "Coordinate training logistics", owner: "premjeet", week: 3, successCriteria: "Invitations sent, RSVPs tracked", subtasks: [] },
+            { id: "14", title: "Prepare co-branded materials", owner: "both", week: 3, successCriteria: "Materials approved by Anthropic", subtasks: [] },
+            { id: "15", title: "Deliver onsite training event", owner: "both", week: 3, successCriteria: "Event complete, feedback collected", subtasks: [] },
+            { id: "16", title: "Finalize pilot scope & metrics", owner: "wendy", week: 5, successCriteria: "SOW signed, KPIs defined", subtasks: [] },
+            { id: "17", title: "Staff delivery team", owner: "premjeet", week: 5, successCriteria: "Team assigned & prepared", subtasks: [] },
+            { id: "18", title: "Enroll certification candidates", owner: "premjeet", week: 5, successCriteria: "5-8 people enrolled & started", subtasks: [] },
+            { id: "19", title: "Track internal Claude adoption", owner: "premjeet", week: 7, successCriteria: "100% license utilization", subtasks: [] },
+            { id: "20", title: "Steering committee meetings", owner: "wendy", week: 7, successCriteria: "3 meetings completed in 90 days", subtasks: [] }
         ];
 
         const ownerColors = {
@@ -421,6 +515,7 @@
 
         const statuses = { notStarted: 'not-started', inProgress: 'in-progress', complete: 'complete' };
         let taskStates = {};
+        let draggedElement = null;
 
         function loadState() {
             const saved = localStorage.getItem('anthropic-tasks');
@@ -456,18 +551,45 @@
             
             const card = document.createElement('div');
             card.className = `task-card owner-${task.owner}`;
+            card.draggable = true;
+            card.dataset.taskId = task.id;
             
             const statusLabel = status === statuses.notStarted ? 'Not Started' : status === statuses.inProgress ? 'In Progress' : 'Complete';
             const nextStatus = status === statuses.notStarted ? statuses.inProgress : status === statuses.inProgress ? statuses.complete : statuses.notStarted;
             
             const contentDiv = document.createElement('div');
             contentDiv.className = 'task-content';
+            
+            let subtasksHtml = '';
+            if (task.subtasks && task.subtasks.length > 0) {
+                subtasksHtml = '<div class="subtasks-container">';
+                task.subtasks.forEach((subtask, idx) => {
+                    const completed = subtask.completed ? 'completed' : '';
+                    subtasksHtml += `
+                        <div class="subtask-item">
+                            <input type="checkbox" class="subtask-checkbox" data-task-id="${task.id}" data-subtask-idx="${idx}" ${subtask.completed ? 'checked' : ''}>
+                            <span class="subtask-text ${completed}">${subtask.text}</span>
+                            <span class="subtask-delete" onclick="deleteSubtask('${task.id}', ${idx})">×</span>
+                        </div>
+                    `;
+                });
+                subtasksHtml += '</div>';
+            }
+            
             contentDiv.innerHTML = `
                 <div class="task-title">${task.title}</div>
                 <div class="task-criteria">${task.successCriteria}</div>
                 <div class="task-tags">
                     <span class="task-tag">${owner.label}</span>
                     <span class="task-tag">Week ${task.week}</span>
+                </div>
+                ${subtasksHtml}
+                <div class="add-subtask-form">
+                    <input type="text" class="subtask-input" placeholder="Add subtask..." data-task-id="${task.id}">
+                    <button onclick="addSubtask('${task.id}')">Add</button>
+                </div>
+                <div class="task-actions">
+                    <button onclick="deleteTask('${task.id}')">Delete task</button>
                 </div>
             `;
             
@@ -478,11 +600,51 @@
             card.appendChild(contentDiv);
             card.appendChild(statusDiv);
             
-            card.addEventListener('click', () => {
-                taskStates[task.id].status = nextStatus;
-                saveState();
-                render();
+            card.addEventListener('click', (e) => {
+                if (!e.target.closest('.subtask-checkbox') && !e.target.closest('.subtask-delete') && !e.target.closest('.add-subtask-form') && !e.target.closest('.task-actions')) {
+                    taskStates[task.id].status = nextStatus;
+                    saveState();
+                    render();
+                }
             });
+            
+            card.addEventListener('dragstart', (e) => {
+                draggedElement = card;
+                card.classList.add('dragging');
+                e.dataTransfer.effectAllowed = 'move';
+            });
+            
+            card.addEventListener('dragend', () => {
+                card.classList.remove('dragging');
+                document.querySelectorAll('.tasks-list').forEach(list => {
+                    list.classList.remove('drag-over');
+                });
+            });
+            
+            // Subtask checkbox events
+            const subtaskCheckboxes = contentDiv.querySelectorAll('.subtask-checkbox');
+            subtaskCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', (e) => {
+                    const taskId = e.target.dataset.taskId;
+                    const subtaskIdx = parseInt(e.target.dataset.subtaskIdx);
+                    const foundTask = tasks.find(t => t.id === taskId);
+                    if (foundTask && foundTask.subtasks[subtaskIdx]) {
+                        foundTask.subtasks[subtaskIdx].completed = e.target.checked;
+                        saveState();
+                        render();
+                    }
+                });
+            });
+            
+            // Subtask input enter key
+            const subtaskInput = contentDiv.querySelector('.subtask-input');
+            if (subtaskInput) {
+                subtaskInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        addSubtask(task.id);
+                    }
+                });
+            }
             
             return card;
         }
@@ -490,35 +652,54 @@
         let currentFilter = 'all';
 
         function render() {
-            document.getElementById('week1').innerHTML = '';
-            document.getElementById('week2').innerHTML = '';
-            document.getElementById('week3').innerHTML = '';
-            document.getElementById('week5').innerHTML = '';
-            document.getElementById('week7').innerHTML = '';
+            ['week1', 'week2', 'week3', 'week5', 'week7'].forEach(weekId => {
+                document.getElementById(weekId).innerHTML = '';
+            });
             
             tasks.forEach(task => {
                 if (currentFilter !== 'all' && task.owner !== currentFilter) return;
                 
-                const weekId = task.week === 1 ? 'week1' : task.week === 2 ? 'week2' : task.week === 3 || task.week === 4 ? 'week3' : task.week === 5 || task.week === 6 ? 'week5' : 'week7';
+                const weekId = task.week === 1 ? 'week1' : task.week === 2 ? 'week2' : task.week === 3 ? 'week3' : task.week === 5 ? 'week5' : 'week7';
                 const container = document.getElementById(weekId);
-                
-                if (!container.querySelector('.empty-state')) {
-                    container.appendChild(createTaskCard(task));
-                }
-            });
-            
-            // Show empty state if no tasks
-            ['week1', 'week2', 'week3', 'week5', 'week7'].forEach(weekId => {
-                const container = document.getElementById(weekId);
-                if (container.children.length === 0) {
-                    const empty = document.createElement('div');
-                    empty.className = 'empty-state';
-                    empty.textContent = 'No tasks in this week';
-                    container.appendChild(empty);
-                }
+                container.appendChild(createTaskCard(task));
             });
             
             updateCounts();
+            setupDragAndDrop();
+        }
+
+        function setupDragAndDrop() {
+            const lists = document.querySelectorAll('.tasks-list');
+            
+            lists.forEach(list => {
+                list.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    e.dataTransfer.dropEffect = 'move';
+                    list.classList.add('drag-over');
+                });
+                
+                list.addEventListener('dragleave', () => {
+                    list.classList.remove('drag-over');
+                });
+                
+                list.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    list.classList.remove('drag-over');
+                    
+                    if (draggedElement) {
+                        const taskId = draggedElement.dataset.taskId;
+                        const task = tasks.find(t => t.id === taskId);
+                        
+                        // Determine new week based on which list was dropped into
+                        const listId = list.id;
+                        const weekMap = { week1: 1, week2: 2, week3: 3, week5: 5, week7: 7 };
+                        task.week = weekMap[listId];
+                        
+                        saveState();
+                        render();
+                    }
+                });
+            });
         }
 
         function updateCounts() {
@@ -575,7 +756,8 @@
                 title,
                 successCriteria: criteria,
                 owner,
-                week
+                week,
+                subtasks: []
             };
             
             tasks.push(newTask);
@@ -587,6 +769,40 @@
             saveState();
             render();
         });
+
+        window.addSubtask = function(taskId) {
+            const input = document.querySelector(`.subtask-input[data-task-id="${taskId}"]`);
+            const text = input.value.trim();
+            
+            if (!text) return;
+            
+            const task = tasks.find(t => t.id === taskId);
+            if (!task.subtasks) task.subtasks = [];
+            
+            task.subtasks.push({ text, completed: false });
+            input.value = '';
+            
+            saveState();
+            render();
+        };
+
+        window.deleteSubtask = function(taskId, idx) {
+            const task = tasks.find(t => t.id === taskId);
+            if (task && task.subtasks) {
+                task.subtasks.splice(idx, 1);
+                saveState();
+                render();
+            }
+        };
+
+        window.deleteTask = function(taskId) {
+            if (confirm('Delete this task?')) {
+                tasks = tasks.filter(t => t.id !== taskId);
+                delete taskStates[taskId];
+                saveState();
+                render();
+            }
+        };
 
         loadState();
         render();
