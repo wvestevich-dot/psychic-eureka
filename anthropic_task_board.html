@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anthropic Partnership 30-60-90 Task Board</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background: #f5f5f5;
+            padding: 2rem;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+        }
+        
+        h1 {
+            font-size: 24px;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .add-task-section {
+            background: #f9f9f9;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .add-task-section h3 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            color: #666;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr auto;
+            gap: 8px;
+        }
+        
+        input, select {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #4F70CD;
+            box-shadow: 0 0 0 2px rgba(79, 112, 205, 0.1);
+        }
+        
+        button {
+            padding: 8px 16px;
+            background: #4F70CD;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+        
+        button:hover {
+            background: #3d5aa5;
+        }
+        
+        .filter-section {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            padding: 6px 12px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+            transition: all 0.2s;
+        }
+        
+        .filter-btn.active {
+            border-color: #4F70CD;
+            background: #f0f2ff;
+            color: #4F70CD;
+        }
+        
+        .filter-btn.wendy {
+            border-color: #4F70CD;
+            color: #4F70CD;
+        }
+        
+        .filter-btn.wendy:hover {
+            background: rgba(79, 112, 205, 0.1);
+        }
+        
+        .filter-btn.premjeet {
+            border-color: #1D9E75;
+            color: #1D9E75;
+        }
+        
+        .filter-btn.premjeet:hover {
+            background: rgba(29, 158, 117, 0.1);
+        }
+        
+        .filter-btn.both {
+            border-color: #B87517;
+            color: #B87517;
+        }
+        
+        .filter-btn.both:hover {
+            background: rgba(184, 117, 23, 0.1);
+        }
+        
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .metric-card {
+            background: #f9f9f9;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+        }
+        
+        .metric-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #888;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+        
+        .metric-value {
+            font-size: 28px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .week-section {
+            margin-bottom: 2.5rem;
+        }
+        
+        .week-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .tasks-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .task-card {
+            border: 1px solid;
+            border-radius: 8px;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        
+        .task-card:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transform: translateY(-1px);
+        }
+        
+        .task-content {
+            flex: 1;
+        }
+        
+        .task-title {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 4px;
+            color: #333;
+        }
+        
+        .task-criteria {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+        
+        .task-tags {
+            display: flex;
+            gap: 6px;
+        }
+        
+        .task-tag {
+            font-size: 12px;
+            padding: 3px 8px;
+            background: white;
+            border: 0.5px solid;
+            border-radius: 3px;
+            font-weight: 500;
+        }
+        
+        .task-status {
+            font-size: 12px;
+            padding: 4px 8px;
+            background: white;
+            border: 0.5px solid;
+            border-radius: 4px;
+            font-weight: 500;
+            white-space: nowrap;
+            text-align: right;
+            min-width: 90px;
+        }
+        
+        .owner-wendy {
+            background: rgba(79, 112, 205, 0.08);
+            border-color: #4F70CD;
+            color: #4F70CD;
+        }
+        
+        .owner-premjeet {
+            background: rgba(29, 158, 117, 0.08);
+            border-color: #1D9E75;
+            color: #1D9E75;
+        }
+        
+        .owner-both {
+            background: rgba(184, 117, 23, 0.08);
+            border-color: #B87517;
+            color: #B87517;
+        }
+        
+        .task-card.owner-wendy .task-tag,
+        .task-card.owner-wendy .task-status {
+            border-color: #4F70CD;
+            color: #4F70CD;
+        }
+        
+        .task-card.owner-premjeet .task-tag,
+        .task-card.owner-premjeet .task-status {
+            border-color: #1D9E75;
+            color: #1D9E75;
+        }
+        
+        .task-card.owner-both .task-tag,
+        .task-card.owner-both .task-status {
+            border-color: #B87517;
+            color: #B87517;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: #999;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 1024px) {
+            .form-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .metrics {
+                grid-template-columns: 1fr;
+            }
+            
+            .task-card {
+                flex-direction: column;
+            }
+            
+            .task-status {
+                width: 100%;
+                text-align: left;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Anthropic Partnership 30-60-90 Task Board</h1>
+        
+        <div class="add-task-section">
+            <h3>Add a task</h3>
+            <div class="form-grid">
+                <input type="text" id="newTaskTitle" placeholder="Task title">
+                <input type="text" id="newTaskCriteria" placeholder="Success criteria">
+                <select id="newTaskOwner">
+                    <option value="wendy">Wendy</option>
+                    <option value="premjeet">Premjeet</option>
+                    <option value="both">Both</option>
+                </select>
+                <select id="newTaskWeek">
+                    <option value="1">Week 1</option>
+                    <option value="2">Week 2</option>
+                    <option value="3">Week 3</option>
+                    <option value="4">Week 4</option>
+                    <option value="5">Week 5</option>
+                    <option value="6">Week 6</option>
+                    <option value="7">Week 7+</option>
+                </select>
+                <button id="addTaskBtn">Add</button>
+            </div>
+        </div>
+        
+        <div class="filter-section">
+            <button class="filter-btn active" id="filterAll">All</button>
+            <button class="filter-btn wendy" id="filterWendy">Wendy</button>
+            <button class="filter-btn premjeet" id="filterPremjeet">Premjeet</button>
+            <button class="filter-btn both" id="filterBoth">Both</button>
+        </div>
+        
+        <div class="metrics">
+            <div class="metric-card">
+                <div class="metric-label">Not Started</div>
+                <div class="metric-value" id="countNotStarted">0</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">In Progress</div>
+                <div class="metric-value" id="countInProgress">0</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Complete</div>
+                <div class="metric-value" id="countComplete">0</div>
+            </div>
+        </div>
+        
+        <div class="week-section">
+            <div class="week-title">Week 1 — Contracts & resources</div>
+            <div id="week1" class="tasks-list"></div>
+        </div>
+        
+        <div class="week-section">
+            <div class="week-title">Week 2–3 — Customer Zero ID</div>
+            <div id="week2" class="tasks-list"></div>
+        </div>
+        
+        <div class="week-section">
+            <div class="week-title">Week 3–4 — Sales enablement & training</div>
+            <div id="week3" class="tasks-list"></div>
+        </div>
+        
+        <div class="week-section">
+            <div class="week-title">Week 5–6 — Customer Zero pilot</div>
+            <div id="week5" class="tasks-list"></div>
+        </div>
+        
+        <div class="week-section">
+            <div class="week-title">Week 7+ — Ongoing</div>
+            <div id="week7" class="tasks-list"></div>
+        </div>
+    </div>
+
+    <script>
+        let tasks = [
+            { id: "1", title: "Close enterprise license deal", owner: "wendy", week: 1, successCriteria: "Internal deployment & certification path" },
+            { id: "2", title: "Apply for Partner Growth Funds", owner: "wendy", week: 1, successCriteria: "Application submitted" },
+            { id: "3", title: "Set up weekly team sync cadence", owner: "wendy", week: 1, successCriteria: "Weekly syncs running" },
+            { id: "4", title: "Review top 10 accounts vs criteria", owner: "wendy", week: 2, successCriteria: "Top 3 candidates identified" },
+            { id: "5", title: "Select Customer Zero candidate", owner: "both", week: 2, successCriteria: "Champion selected & informed" },
+            { id: "6", title: "Secure account leader buy-in", owner: "wendy", week: 2, successCriteria: "Introduction scheduled" },
+            { id: "7", title: "Schedule Customer Zero discovery", owner: "wendy", week: 2, successCriteria: "Discovery call on calendar" },
+            { id: "8", title: "Develop sales enablement session", owner: "wendy", week: 3, successCriteria: "2-hour session + materials ready" },
+            { id: "9", title: "Schedule & deliver sales training", owner: "wendy", week: 3, successCriteria: "90%+ attendance" },
+            { id: "10", title: "Distribute sales materials", owner: "wendy", week: 3, successCriteria: "Materials in CRM & shared channel" },
+            { id: "11", title: "Launch pipeline tracker", owner: "both", week: 3, successCriteria: "System operational & linked to Salesforce" },
+            { id: "12", title: "Schedule onsite Anthropic training", owner: "both", week: 4, successCriteria: "Date & location confirmed" },
+            { id: "13", title: "Coordinate training logistics", owner: "premjeet", week: 4, successCriteria: "Invitations sent, RSVPs tracked" },
+            { id: "14", title: "Prepare co-branded materials", owner: "both", week: 4, successCriteria: "Materials approved by Anthropic" },
+            { id: "15", title: "Deliver onsite training event", owner: "both", week: 4, successCriteria: "Event complete, feedback collected" },
+            { id: "16", title: "Finalize pilot scope & metrics", owner: "wendy", week: 5, successCriteria: "SOW signed, KPIs defined" },
+            { id: "17", title: "Staff delivery team", owner: "premjeet", week: 5, successCriteria: "Team assigned & prepared" },
+            { id: "18", title: "Enroll certification candidates", owner: "premjeet", week: 5, successCriteria: "5-8 people enrolled & started" },
+            { id: "19", title: "Track internal Claude adoption", owner: "premjeet", week: 7, successCriteria: "100% license utilization" },
+            { id: "20", title: "Steering committee meetings", owner: "wendy", week: 7, successCriteria: "3 meetings completed in 90 days" }
+        ];
+
+        const ownerColors = {
+            wendy: { label: 'Wendy' },
+            premjeet: { label: 'Premjeet' },
+            both: { label: 'Both' }
+        };
+
+        const statuses = { notStarted: 'not-started', inProgress: 'in-progress', complete: 'complete' };
+        let taskStates = {};
+
+        function loadState() {
+            const saved = localStorage.getItem('anthropic-tasks');
+            if (saved) {
+                try {
+                    const data = JSON.parse(saved);
+                    tasks = data.tasks || tasks;
+                    taskStates = data.states || {};
+                } catch (e) {
+                    taskStates = {};
+                }
+            }
+            tasks.forEach(t => {
+                if (!taskStates[t.id]) {
+                    taskStates[t.id] = { status: statuses.notStarted };
+                }
+            });
+        }
+
+        function saveState() {
+            localStorage.setItem('anthropic-tasks', JSON.stringify({ tasks, states: taskStates }));
+            updateCounts();
+        }
+
+        function generateId() {
+            return String(Math.max(...tasks.map(t => parseInt(t.id) || 0)) + 1);
+        }
+
+        function createTaskCard(task) {
+            const state = taskStates[task.id];
+            const status = state.status;
+            const owner = ownerColors[task.owner];
+            
+            const card = document.createElement('div');
+            card.className = `task-card owner-${task.owner}`;
+            
+            const statusLabel = status === statuses.notStarted ? 'Not Started' : status === statuses.inProgress ? 'In Progress' : 'Complete';
+            const nextStatus = status === statuses.notStarted ? statuses.inProgress : status === statuses.inProgress ? statuses.complete : statuses.notStarted;
+            
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'task-content';
+            contentDiv.innerHTML = `
+                <div class="task-title">${task.title}</div>
+                <div class="task-criteria">${task.successCriteria}</div>
+                <div class="task-tags">
+                    <span class="task-tag">${owner.label}</span>
+                    <span class="task-tag">Week ${task.week}</span>
+                </div>
+            `;
+            
+            const statusDiv = document.createElement('div');
+            statusDiv.className = 'task-status';
+            statusDiv.textContent = statusLabel;
+            
+            card.appendChild(contentDiv);
+            card.appendChild(statusDiv);
+            
+            card.addEventListener('click', () => {
+                taskStates[task.id].status = nextStatus;
+                saveState();
+                render();
+            });
+            
+            return card;
+        }
+
+        let currentFilter = 'all';
+
+        function render() {
+            document.getElementById('week1').innerHTML = '';
+            document.getElementById('week2').innerHTML = '';
+            document.getElementById('week3').innerHTML = '';
+            document.getElementById('week5').innerHTML = '';
+            document.getElementById('week7').innerHTML = '';
+            
+            tasks.forEach(task => {
+                if (currentFilter !== 'all' && task.owner !== currentFilter) return;
+                
+                const weekId = task.week === 1 ? 'week1' : task.week === 2 ? 'week2' : task.week === 3 || task.week === 4 ? 'week3' : task.week === 5 || task.week === 6 ? 'week5' : 'week7';
+                const container = document.getElementById(weekId);
+                
+                if (!container.querySelector('.empty-state')) {
+                    container.appendChild(createTaskCard(task));
+                }
+            });
+            
+            // Show empty state if no tasks
+            ['week1', 'week2', 'week3', 'week5', 'week7'].forEach(weekId => {
+                const container = document.getElementById(weekId);
+                if (container.children.length === 0) {
+                    const empty = document.createElement('div');
+                    empty.className = 'empty-state';
+                    empty.textContent = 'No tasks in this week';
+                    container.appendChild(empty);
+                }
+            });
+            
+            updateCounts();
+        }
+
+        function updateCounts() {
+            const notStarted = tasks.filter(t => taskStates[t.id]?.status === statuses.notStarted).length;
+            const inProgress = tasks.filter(t => taskStates[t.id]?.status === statuses.inProgress).length;
+            const complete = tasks.filter(t => taskStates[t.id]?.status === statuses.complete).length;
+            
+            document.getElementById('countNotStarted').textContent = notStarted;
+            document.getElementById('countInProgress').textContent = inProgress;
+            document.getElementById('countComplete').textContent = complete;
+        }
+
+        document.getElementById('filterAll').addEventListener('click', function() {
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+            currentFilter = 'all';
+            render();
+        });
+
+        document.getElementById('filterWendy').addEventListener('click', function() {
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+            currentFilter = 'wendy';
+            render();
+        });
+
+        document.getElementById('filterPremjeet').addEventListener('click', function() {
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+            currentFilter = 'premjeet';
+            render();
+        });
+
+        document.getElementById('filterBoth').addEventListener('click', function() {
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+            currentFilter = 'both';
+            render();
+        });
+
+        document.getElementById('addTaskBtn').addEventListener('click', () => {
+            const title = document.getElementById('newTaskTitle').value.trim();
+            const criteria = document.getElementById('newTaskCriteria').value.trim();
+            const owner = document.getElementById('newTaskOwner').value;
+            const week = parseInt(document.getElementById('newTaskWeek').value);
+            
+            if (!title || !criteria) {
+                alert('Please fill in title and success criteria');
+                return;
+            }
+            
+            const newTask = {
+                id: generateId(),
+                title,
+                successCriteria: criteria,
+                owner,
+                week
+            };
+            
+            tasks.push(newTask);
+            taskStates[newTask.id] = { status: statuses.notStarted };
+            
+            document.getElementById('newTaskTitle').value = '';
+            document.getElementById('newTaskCriteria').value = '';
+            
+            saveState();
+            render();
+        });
+
+        loadState();
+        render();
+    </script>
+</body>
+</html>
